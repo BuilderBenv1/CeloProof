@@ -100,6 +100,21 @@ Deploy to Vercel — connect the GitHub repo and it auto-deploys.
 - **MiniPay detection** relies on known contract addresses. New MiniPay contract versions may need manual addition.
 - **Cross-chain reputation** defaults to neutral (7/15) when AgentProof has no data. This prevents penalizing Celo-only wallets.
 
+## Deployed Contract
+
+- **Contract:** [`0x0be969d494f387a631cc3f6371c5e25502dee4e6`](https://explorer.celo.org/mainnet/address/0x0be969d494f387a631cc3f6371c5e25502dee4e6)
+- **Tx:** [`0xc149fc34...`](https://explorer.celo.org/mainnet/tx/0xc149fc3401bc124b0c3249b5863390f6e1e1b7a8b527205ee9a1234c1704dcb3)
+- **Chain:** Celo Mainnet (42220)
+- **Type:** Trust Attestation Registry
+
+## MiniPay Compatibility
+
+CeloProof detects MiniPay's injected wallet (`window.ethereum.isMiniPay`) and auto-connects. Inside MiniPay:
+- Wallet connects automatically — no connect button shown
+- Wallet address is auto-scored on load
+- Uses `viem` (not ethers.js) per MiniPay requirements
+- Legacy transaction type for compatibility
+
 ## Links
 
 - [Celo](https://celo.org)

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { scoreDemoWallet, DEMO_WALLETS } from "../lib/scorer";
+import { useMiniPay } from "../lib/useMiniPay";
 
 function ScoreRing({ score, tier, size = 120 }) {
   const radius = (size - 16) / 2;
@@ -115,12 +116,21 @@ export default function CeloProofHome() {
   const [loading, setLoading] = useState(false);
   const [demoResults, setDemoResults] = useState([]);
   const inputRef = useRef();
+  const { isMiniPay, address: miniPayAddress, connect: connectMiniPay } = useMiniPay();
 
   useEffect(() => {
     const results = DEMO_WALLETS.map((d) => scoreDemoWallet(d.address));
     setDemoResults(results);
     setActiveResult(results[0]);
   }, []);
+
+  // Auto-score MiniPay wallet when detected
+  useEffect(() => {
+    if (miniPayAddress) {
+      setInputAddress(miniPayAddress);
+      handleLookup(miniPayAddress);
+    }
+  }, [miniPayAddress]);
 
   const handleLookup = async (input = inputAddress.trim()) => {
     if (!input) return;
@@ -166,6 +176,20 @@ export default function CeloProofHome() {
             Trust oracle for Celo & MiniPay wallets. 7 signals. Penalty registry. Category-aware anomaly detection.
           </p>
           <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
+            {!isMiniPay && !miniPayAddress && (
+              <button onClick={async () => {
+                const addr = await connectMiniPay();
+                if (addr) { setInputAddress(addr); handleLookup(addr); }
+              }} style={{ padding: "8px 16px", borderRadius: 6, background: "linear-gradient(135deg, rgba(252,255,82,0.15) 0%, rgba(53,208,127,0.15) 100%)", border: "1px solid rgba(252,255,82,0.3)", color: "#FCFF52", fontSize: 12, fontWeight: 700, fontFamily: "'Space Mono', monospace", cursor: "pointer" }}>
+                Check My Score
+              </button>
+            )}
+            {isMiniPay && (
+              <div style={{ padding: "8px 16px", borderRadius: 6, background: "rgba(53,208,127,0.1)", border: "1px solid rgba(53,208,127,0.25)", color: "#35D07F", fontSize: 12, fontWeight: 700, fontFamily: "'Space Mono', monospace", display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#35D07F", animation: "pulse 1.5s ease-in-out infinite" }} />
+                MiniPay Connected
+              </div>
+            )}
             <Link href="/leaderboard" style={{ textDecoration: "none", padding: "8px 16px", borderRadius: 6, background: "rgba(53,208,127,0.1)", border: "1px solid rgba(53,208,127,0.25)", color: "#35D07F", fontSize: 12, fontWeight: 700, fontFamily: "'Space Mono', monospace" }}>
               Leaderboard
             </Link>
