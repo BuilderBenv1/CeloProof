@@ -27,7 +27,10 @@ const celo = defineChain({
 // We'll deploy raw bytecode via sendTransaction
 
 async function deploy() {
-  const account = privateKeyToAccount("0xREDACTED_KEY_ROTATED");
+  if (!process.env.DEPLOYER_PRIVATE_KEY) {
+    throw new Error("DEPLOYER_PRIVATE_KEY env var is required. Never hardcode private keys.");
+  }
+  const account = privateKeyToAccount(`0x${process.env.DEPLOYER_PRIVATE_KEY.replace(/^0x/, "")}`);
 
   console.log(`Deploying from ${account.address}...`);
 
